@@ -11,7 +11,7 @@ lion = imageio.imread("daft.jpg")
 plt.imshow(lion, cmap = plt.get_cmap('gray'))
 plt.show()
 
-# Convert color image to grayscale to help 
+#converting to grey scale for easier image manipulation
 lion_gray = np.dot(lion[...,:3], [0.299, 0.587, 0.114])
 plt.imshow(lion_gray, cmap = plt.get_cmap('gray'))
 plt.show()
