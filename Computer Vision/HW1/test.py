@@ -1,59 +1,39 @@
+import cv2
 import numpy as np
-import matplotlib.pyplot as plt
-from PIL import Image
 
-def laplacian_pyramid(image, num_levels):
-    pyramid = [image]
-    for i in range(num_levels):
-        image = image[::2, ::2]
-        pyramid.append(image)
-    return pyramid
+# Loading the images
+apple = cv2.imread('orange.png')
+orange = cv2.imread('apple.png')
 
-def reconstruct_laplacian_pyramid(pyramid):
-    num_levels = len(pyramid) - 1
-    reconstructed = pyramid[num_levels]
-    for i in range(num_levels, 0, -1):
-        expanded = np.repeat(reconstructed, 2, axis=0)
-        expanded = np.repeat(expanded, 2, axis=1)
-        reconstructed = pyramid[i - 1] + expanded
-    return reconstructed
+# Resizing the images
+apple = cv2.resize(apple, (400, 400))
+orange = cv2.resize(orange, (400, 400))
 
-def blend_images(image1, image2, mask, num_levels):
-    # Create Laplacian pyramids for each image
-    image1_pyramid = laplacian_pyramid(image1, num_levels)
-    image2_pyramid = laplacian_pyramid(image2, num_levels)
+# Loading the binary mask
+mask = cv2.imread('mask.png', 0)
 
-    # Create blended pyramid using the mask
-    blended_pyramid = []
-    for i in range(num_levels):
-        mask_resized = np.resize(mask, image1_pyramid[i].shape[:2])
-        mask_expanded = np.expand_dims(mask_resized, axis=2)
-        blended_level = image1_pyramid[i] * (1 - mask_expanded) + image2_pyramid[i] * mask_expanded
-        blended_pyramid.append(blended_level)
+# Blending using Laplacian pyramids and binary mask
+apple_copy = apple.copy()
+orange_copy = orange.copy()
 
-    # Reconstruct the blended image from the pyramid
-    blended_image = reconstruct_laplacian_pyramid(blended_pyramid)
+for i in range(6):
+    apple_copy = cv2.pyrDown(apple_copy)
+    orange_copy = cv2.pyrDown(orange_copy)
 
-    # Normalize the blended image to [0, 1]
-    blended_image = np.clip(blended_image, 0, 1)
+for i in range(5, -1, -1):
+    apple_expanded = cv2.pyrUp(apple_copy)
+    orange_expanded = cv2.pyrUp(orange_copy)
 
-    return blended_image
+    laplacian_apple = cv2.subtract(apple_copy, apple_expanded)
+    laplacian_orange = cv2.subtract(orange_copy, orange_expanded)
 
+    blended = cv2.add(cv2.multiply(laplacian_apple, mask), cv2.multiply(laplacian_orange, 255 - mask))
 
+    apple_copy = cv2.add(apple_expanded, blended)
+    orange_copy = cv2.add(orange_expanded, blended)
 
-# Load the images
-image1 = np.array(Image.open('apple.png').convert('RGB'))
-image2 = np.array(Image.open('orange.png').convert('RGB'))
-mask = np.array(Image.open('mask.png').convert('L'))
+apple_orange_reconstruct = apple_copy
 
-# Normalize the mask to range [0, 1]
-mask = mask / 255.0
-
-# Blend the images
-num_levels = 5
-blended_image = blend_images(image1, image2, mask, num_levels)
-
-# Display the blended image
-plt.imshow(blended_image)
-plt.axis('off')
-plt.show()
+cv2.imshow("apple_orange_reconstruct", apple_orange_reconstruct)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
