@@ -1,0 +1,5 @@
+sex=Male gain=none (60.5049)
+sex=Male loss=none (63.3887)
+workclass=Private country=United-States (61.8378)
+workclass=Private gain=none loss=none (61.3679)
+salary=<=50K country=United-States gain=none loss=none (62.6332)
