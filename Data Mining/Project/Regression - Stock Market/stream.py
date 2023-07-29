@@ -50,18 +50,21 @@ def prediction(ticker):
 
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=apple_quote.index, y=apple_quote['Close'], name='Closing Price'))
+    fig.update_layout(yaxis_title='Price in USD($)')
     fig.layout.update(title_text='Apple Stock Data', xaxis_rangeslider_visible=True)
     st.plotly_chart(fig)
 
+    st.table(apple_quote.tail(5))
+
     return pred_price
-
-
-
     
-
+    
 if submit_button:
     data_load_state = st.text("")
     pred_price = prediction(user_date)
-    data_load_state.text(pred_price)
+    pred_price = str(pred_price)
+    pred_price = pred_price.strip('[]')
+    display_text = "The predicted price is: $" + str(pred_price)
+    data_load_state.text(display_text)
 
 
