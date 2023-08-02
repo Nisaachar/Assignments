@@ -4,6 +4,8 @@ set.seed(42)
 # (1) Generate 200 normally distributed random numbers
 random_numbers <- rnorm(200)
 
+print(random_numbers)
+
 # (2) Show the summary of the numbers using min, Q1, Median, Mean, Q3, and Max
 summary_stats <- summary(random_numbers)
 print(summary_stats)

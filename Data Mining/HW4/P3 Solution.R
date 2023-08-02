@@ -111,41 +111,33 @@ print(outliers[1:5, ])
 
 
 #6
-# Load the required libraries
-# Load the required libraries
-library(ggplot2)
-library(dbscan)
+kmeans.result <- kmeans(iris2, centers=3)
+print(kmeans.result)
 
-# Load the iris dataset
-data(iris)
+# cluster centers
+kmeans.result$centers
 
-# Remove the "Species" column
-iris_features <- iris[, c("Petal.Length", "Petal.Width")]
-
-# Compute the density-based clustering using dbscan
-dbscan_result <- dbscan(iris_features, eps = 0.5, minPts = 5)
-
-# Get the indices of the outliers (noise points) as identified by dbscan
-outlier_indices <- which(dbscan_result$cluster == 0)
-
-# Extract the outlier data points from the original iris dataset
-outliers <- iris[outlier_indices, ]
-
-# Add cluster and outlier information to the iris dataset
-iris$Cluster <- dbscan_result$cluster
-iris$IsOutlier <- ifelse(1:nrow(iris) %in% outlier_indices, "Outlier", "Inlier")
-
-# Create a new data frame for centroids with appropriate column names
-centroid_data <- data.frame(Petal.Length = dbscan_result$centers[, 1], Petal.Width = dbscan_result$centers[, 2])
-
-# Create the plot
-ggplot(iris, aes(x = "Petal.Length", y = "Petal.Width", color = factor(Cluster), shape = IsOutlier)) +
-  geom_point(size = 4) +
-  geom_point(data = centroid_data, aes(x = "Petal.Length", y = "Petal.Width"), color = "black", size = 5, shape = 2) +
-  scale_color_discrete(name = "Cluster") +
-  scale_shape_manual(name = "Outlier", values = c(16, 17)) +
-  theme_minimal()
+# calculate distances between objects and cluster centers
+centers <- kmeans.result$centers[kmeans.result$cluster, ]
+distances <- sqrt(rowSums((iris2 - centers)^2))
+print(centers)
+print(distances)
 
 
+# pick top 5 largest distances
+outliers <- order(distances, decreasing=T)[1:5]
+# who are outliers
+print(outliers)
 
+# local outlier factor (LOF) 
+iris2 <- iris[,1:4]
+outlier.scores <- lof(iris2, k=5)
+print(outlier.scores)
+
+# plot clusters
+plot(iris2[,c("Sepal.Length", "Sepal.Width")], pch="o", col=kmeans.result$cluster, cex=0.3)
+# plot cluster centers
+points(kmeans.result$centers[,c("Sepal.Length", "Sepal.Width")], col=1:3,pch=8, cex=1.5)
+# plot outliers
+points(iris2[outliers, c("Sepal.Length", "Sepal.Width")], pch="+", col=4, cex=1.5)
 
