@@ -18,7 +18,7 @@ def bootstrap_split(data, percentage=0.8):
     # Generate a bootstrap sample
     indices = np.random.choice(range(num_samples), size=train_size, replace=True)
     train_data = [data[i] for i in indices]
-        
+
     # Validation set is the remaining data not included in the training set
     validation_data = [data[i] for i in range(num_samples) if i not in indices]
     
@@ -81,4 +81,17 @@ for i in range(len(validation_party)):
 error_count = sum(1 for true_class, predicted_class in zip(true_classes, predicted_classes) if true_class != predicted_class)
 test_error_rate = error_count / len(true_classes)
 
+  
+
 print("\nTest Error Rate:", test_error_rate)
+
+train_true_classes = list(training_classes)
+train_predicted_classes = tree.classifyAll(t, list(training_party))
+
+train_error_count = sum(1 for true_class, predicted_class in zip(train_true_classes, train_predicted_classes) if true_class != predicted_class)
+train_error_rate = train_error_count / len(train_true_classes)
+
+print("\nTraining Error Rate:", train_error_rate)
+
+
+
