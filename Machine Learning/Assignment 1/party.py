@@ -13,11 +13,10 @@ party,classes,features = tree.read_data('party.data')
 t=tree.make_tree(party,classes,features)
 tree.printTree(t,' ')
 
-print tree.classifyAll(t,party)
+print(tree.classifyAll(t,party))
 
 for i in range(len(party)):
     tree.classify(t,party[i])
 
-
-print "True Classes"
-print classes
+print("True Classes")
+print(classes)

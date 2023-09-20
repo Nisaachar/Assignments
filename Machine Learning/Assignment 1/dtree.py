@@ -40,7 +40,7 @@ class dtree:
 			# Have reached a leaf
 			return tree
 		else:
-			a = tree.keys()[0]
+			a = list(tree.keys())[0]
 			for i in range(len(self.featureNames)):
 				if self.featureNames[i]==a:
 					break
@@ -146,12 +146,13 @@ class dtree:
 
 	def printTree(self,tree,name):
 		if type(tree) == dict:
-			print name, tree.keys()[0]
-			for item in tree.values()[0].keys():
-				print name, item
-				self.printTree(tree.values()[0][item], name + "\t")
+			print(f'{name}{list(tree.keys())[0]}')
+
+			for item in list(tree.values())[0].keys():
+				print(f'{name}{item}')
+				self.printTree(list(tree.values())[0][item], name + "\t")
 		else:
-			print name, "\t->\t", tree
+			print(f'{name}"\t->\t"{tree}')
 
 	def calc_entropy(self,p):
 		if p!=0:
