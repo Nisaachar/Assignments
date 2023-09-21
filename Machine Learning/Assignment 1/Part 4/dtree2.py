@@ -8,7 +8,7 @@
 
 import numpy as np
 
-class dtree:
+class dtree2:
 	""" A basic Decision Tree"""
 	
 	def __init__(self):
@@ -108,6 +108,7 @@ class dtree:
 			bestFeature = np.argmax(gain)
 			tree = {featureNames[bestFeature]:{}}
 			
+
 			# List the values that bestFeature can take
 			values = []
 			for datapoint in data:

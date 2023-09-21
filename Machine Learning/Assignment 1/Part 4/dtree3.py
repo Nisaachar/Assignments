@@ -8,7 +8,7 @@
 
 import numpy as np
 
-class dtree:
+class dtree3:
 	""" A basic Decision Tree"""
 	
 	def __init__(self):
@@ -96,18 +96,26 @@ class dtree:
 		else:
 
 			# Choose which feature is best	
+			# gain = np.zeros(nFeatures)
+			# featureSet = range(nFeatures)
+			# if forest != 0:
+			# 	np.random.shuffle(featureSet)
+			# 	featureSet = featureSet[0:forest]
+			# for feature in featureSet:
+			# 	g = self.calc_info_gain(data,classes,feature)
+			# 	gain[feature] = totalEntropy - g
+
+			# bestFeature = np.argmax(gain)
+			# tree = {featureNames[bestFeature]:{}}
 			gain = np.zeros(nFeatures)
-			featureSet = range(nFeatures)
-			if forest != 0:
-				np.random.shuffle(featureSet)
-				featureSet = featureSet[0:forest]
+			featureSet = list(range(nFeatures))
 			for feature in featureSet:
-				g = self.calc_info_gain(data,classes,feature)
-				gain[feature] = totalEntropy - g
+				g = self.calc_info_gain(data, classes, feature)
+				gain[feature] = g
 
 			bestFeature = np.argmax(gain)
-			tree = {featureNames[bestFeature]:{}}
-			
+			tree = {featureNames[bestFeature]: {}}
+
 			# List the values that bestFeature can take
 			values = []
 			for datapoint in data:
@@ -160,52 +168,74 @@ class dtree:
 		else:
 			return 0
 
-	def calc_info_gain(self,data,classes,feature):
+	# def calc_info_gain(self,data,classes,feature):
 
-		# Calculates the information gain based on entropy impurity
-		gain = 0
+	# 	# Calculates the information gain based on entropy impurity
+	# 	gain = 0
+	# 	nData = len(data)
+
+	# 	# List the values that feature can take
+
+	# 	values = []
+	# 	for datapoint in data:
+	# 		if datapoint[feature] not in values:
+	# 			values.append(datapoint[feature])
+
+	# 	featureCounts = np.zeros(len(values))
+	# 	entropy = np.zeros(len(values))
+	# 	valueIndex = 0
+	# 	# Find where those values appear in data[feature] and the corresponding class
+	# 	for value in values:
+	# 		dataIndex = 0
+	# 		newClasses = []
+	# 		for datapoint in data:
+	# 			if datapoint[feature]==value:
+	# 				featureCounts[valueIndex]+=1
+	# 				newClasses.append(classes[dataIndex])
+	# 			dataIndex += 1
+
+	# 		# Get the values in newClasses
+	# 		classValues = []
+	# 		for aclass in newClasses:
+	# 			if classValues.count(aclass)==0:
+	# 				classValues.append(aclass)
+
+	# 		classCounts = np.zeros(len(classValues))
+	# 		classIndex = 0
+	# 		for classValue in classValues:
+	# 			for aclass in newClasses:
+	# 				if aclass == classValue:
+	# 					classCounts[classIndex]+=1 
+	# 			classIndex += 1
+			
+	# 		for classIndex in range(len(classValues)):
+	# 			entropy[valueIndex] += self.calc_entropy(float(classCounts[classIndex])/np.sum(classCounts))
+
+	# 		# Computes the entropy gain
+	# 		gain = gain + float(featureCounts[valueIndex])/nData * entropy[valueIndex]
+	# 		valueIndex += 1
+	# 	return gain	
+
+	def calc_info_gain(self, data, classes, feature):
+        # Calculates the information gain based on Gini index
+		gini_gain = 0
 		nData = len(data)
 
-		# List the values that feature can take
+        # List the values that feature can take
+		values = np.unique([datapoint[feature] for datapoint in data])
 
-		values = []
-		for datapoint in data:
-			if datapoint[feature] not in values:
-				values.append(datapoint[feature])
-
-		featureCounts = np.zeros(len(values))
-		entropy = np.zeros(len(values))
-		valueIndex = 0
-		# Find where those values appear in data[feature] and the corresponding class
 		for value in values:
-			dataIndex = 0
-			newClasses = []
-			for datapoint in data:
-				if datapoint[feature]==value:
-					featureCounts[valueIndex]+=1
-					newClasses.append(classes[dataIndex])
-				dataIndex += 1
+			value_indices = [i for i, datapoint in enumerate(data) if datapoint[feature] == value]
+			value_classes = [classes[i] for i in value_indices]
 
-			# Get the values in newClasses
-			classValues = []
-			for aclass in newClasses:
-				if classValues.count(aclass)==0:
-					classValues.append(aclass)
+			# Calculate Gini index for the current value
+			gini_value = 1.0
+			unique_classes = np.unique(value_classes)
+			for cls in unique_classes:
+				p_i = np.sum([1 for c in value_classes if c == cls]) / len(value_classes)
+				gini_value -= p_i**2
 
-			classCounts = np.zeros(len(classValues))
-			classIndex = 0
-			for classValue in classValues:
-				for aclass in newClasses:
-					if aclass == classValue:
-						classCounts[classIndex]+=1 
-				classIndex += 1
+			gini_gain += (len(value_classes) / nData) * gini_value
+
+		return gini_gain
 			
-			for classIndex in range(len(classValues)):
-				entropy[valueIndex] += self.calc_entropy(float(classCounts[classIndex])/np.sum(classCounts))
-
-			# Computes the entropy gain
-			gain = gain + float(featureCounts[valueIndex])/nData * entropy[valueIndex]
-			valueIndex += 1
-		return gain	
-
-	
