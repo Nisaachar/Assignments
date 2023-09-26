@@ -1,0 +1,6 @@
+[submodule "Machine Learning/Oil Price Prediction/OilPricePrediction-TimeSeries"]
+	path = Machine Learning/Oil Price Prediction/OilPricePrediction-TimeSeries
+	url = https://github.com/Nisaachar/OilPricePrediction-TimeSeries.git
+[submodule "Machine Learning/OilPricePrediction-TimeSeries"]
+	path = Machine Learning/OilPricePrediction-TimeSeries
+	url = https://github.com/Nisaachar/OilPricePrediction-TimeSeries.git
