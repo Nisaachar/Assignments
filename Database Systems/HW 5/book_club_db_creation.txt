@@ -1,7 +1,7 @@
-﻿CREATE (Bart:Reader {name:'Bart Baesens', age:32})
+CREATE (Bart:Reader {name:'Bart Baesens', age:32})
 CREATE (Seppe:Reader {name:'Seppe vanden Broucke', age:30})
 CREATE (Wilfried:Reader {name:'Wilfried Lemahieu', age:40})
-CREATE (Marc:Reader {name:'Marc Markus', age:25})<?anchor FIG-fig-200?><named-content content-type="page">337</named-content>
+CREATE (Marc:Reader {name:'Marc Markus', age:25})
 CREATE (Jenny:Reader {name:'Jenny Jennifers', age:26})
 CREATE (Anne:Reader {name:'Anne HatsAway', age:22})
 CREATE (Mike:Reader {name:'Mike Smith', age:18})
@@ -45,7 +45,7 @@ CREATE
   (b09)-[:IS_GENRE]->(Humor), (b09)-[:IS_GENRE]->(Education),
   (b10)-[:IS_GENRE]->(Detective), (b10)-[:IS_GENRE]->(Thriller),
    (b10)-[:IS_GENRE]->(Fantasy),
-  (b11)-[:IS_GENRE]->(Humor), (b11)-[:IS_GENRE]->(Romance),<named-content content-type="page">338</named-content>
+  (b11)-[:IS_GENRE]->(Humor), (b11)-[:IS_GENRE]->(Romance),
   (b12)-[:IS_GENRE]->(Education), (b12)-[:IS_GENRE]->(Romance),
   (b13)-[:IS_GENRE]->(Humor), (b13)-[:IS_GENRE]->(Education),
   (b14)-[:IS_GENRE]->(Humor), (b14)-[:IS_GENRE]->(Detective),
@@ -90,7 +90,7 @@ CREATE
   (Robert)-[:LIKES]->(b04), (Robert)-[:LIKES]->(b10),
   (Robert)-[:LIKES]->(b12), (Robert)-[:LIKES]->(b13),
   (Elvis)-[:LIKES]->(b03), (Elvis)-[:LIKES]->(b06),
-  (Elvis)-[:LIKES]->(b14), (Elvis)-[:LIKES]->(b16),<named-content content-type="page">339</named-content><?anchor FIG-fig-201?>
+  (Elvis)-[:LIKES]->(b14), (Elvis)-[:LIKES]->(b16),
   (Sandra)-[:LIKES]->(b03), (Sandra)-[:LIKES]->(b05),
   (Sandra)-[:LIKES]->(b07), (Sandra)-[:LIKES]->(b09)
 
