@@ -14,9 +14,9 @@ function App() {
         <nav style={{ marginBottom: 20 }}>
           <ul style={{ listStyleType: 'none', padding: 0 }}>
             <li style={{ display: 'inline', marginRight: 10 }}><Link to="/dashboard">Dashboard</Link></li>
-            <li style={{ display: 'inline', marginRight: 10 }}><Link to="/UpdateOrderStatus">Update Order</Link></li>
             <li style={{ display: 'inline', marginRight: 10 }}><Link to="/top-products">Top N Products</Link></li>
-            <li style={{ display: 'inline', marginRight: 10 }}><Link to="/create-order-form">Create Orders</Link></li>
+            <li style={{ display: 'inline', marginRight: 10 }}><Link to="/create-order-form">Create Order</Link></li>
+            <li style={{ display: 'inline', marginRight: 10 }}><Link to="/UpdateOrderStatus">Update Order</Link></li>
           </ul>
         </nav>
 

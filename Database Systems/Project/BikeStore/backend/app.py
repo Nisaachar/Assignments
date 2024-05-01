@@ -82,6 +82,7 @@ def create_order():
     shipped_date = data['shipped_date']
 
     query = """
+    MATCH (defaultItem:OrderItem {id: 9999})  
     CREATE (order:Order {
         order_id: $order_id,
         order_status: $order_status,
@@ -89,7 +90,8 @@ def create_order():
         required_date: date($required_date),
         shipped_date: date($shipped_date)
     })
-    RETURN order
+    CREATE (order)-[:CONTAINS]->(defaultItem)
+    RETURN order, defaultItem
     """
 
     with driver.session() as session:
@@ -98,11 +100,13 @@ def create_order():
 
     if created_order:
         # Convert Neo4j Node to a dictionary and handle dates
-        order_dict = {k: (created_order['order'][k].to_native() if isinstance(created_order['order'][k], time.Date) else created_order['order'][k]) for k in created_order['order'].keys()}
+        order_dict = {
+            'order': {k: (created_order['order'][k].to_native() if isinstance(created_order['order'][k], time.Date) else created_order['order'][k]) for k in created_order['order'].keys()},
+            'order_item': {k: created_order['defaultItem'][k] for k in created_order['defaultItem'].keys()}
+        }
         return jsonify(order_dict)
     else:
         return jsonify({'error': 'Failed to create order'}), 400
-
 
 
 @app.route('/api/average-order-price')
