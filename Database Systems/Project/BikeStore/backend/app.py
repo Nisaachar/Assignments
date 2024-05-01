@@ -103,8 +103,195 @@ def create_order():
     else:
         return jsonify({'error': 'Failed to create order'}), 400
 
+
+
+@app.route('/api/average-order-price')
+def get_average_order_price():
+    query = "MATCH (o:OrderItem) RETURN avg(o.list_price) AS AverageOrderPrice"
+    
+    with driver.session() as session:
+        result = session.run(query)
+        record = result.single()  # Store the result in a variable
+
+        if record:
+            average_price = record[0]  # Access the first (and only) element if record is not None
+            return jsonify({'AverageOrderValue': average_price})
+        else:
+            return jsonify({'error': 'No data found'}), 404
+
+@app.route('/api/total-orders')
+def get_total_orders():
+    query = "MATCH (o:Order) RETURN count(o) AS TotalOrders"
+    with driver.session() as session:
+        result = session.run(query)
+        record = result.single()  # Fetch the result once
+
+        if record:
+            total_orders = record[0]  # Safely access the result
+        else:
+            total_orders = 0  # Default to 0 if no record is found
+
+    return jsonify({'TotalOrders': total_orders})
+
+@app.route('/api/total-sales-revenue')
+def get_total_sales_revenue():
+    query = """
+    MATCH (o:OrderItem)
+    RETURN round(100 * sum(o.list_price)) / 100 AS TotalSalesRevenue
+    """
+    with driver.session() as session:
+        result = session.run(query)
+        record = result.single()  # Fetch the result once
+
+        if record:
+            total_sales_revenue = record["TotalSalesRevenue"]  # Access the rounded result
+        else:
+            total_sales_revenue = 0  # Default to 0 if no record is found
+
+    return jsonify({'TotalSalesRevenue': total_sales_revenue})
+
+@app.route('/api/active-customers')
+def get_active_customers():
+    query = """
+    MATCH (c:Customer)-[:PLACED_BY]-(o:Order)
+    WHERE o.order_date >= date('2018-01-01')
+    WITH DISTINCT c
+    RETURN count(c) AS ActiveCustomers
+    """
+    with driver.session() as session:
+        result = session.run(query)
+        record = result.single()  # Fetch the result once
+
+        if record:
+            active_customers = record["ActiveCustomers"]  # Access the result
+        else:
+            active_customers = 0  # Default to 0 if no record is found
+
+    return jsonify({'ActiveCustomers': active_customers})
+
+@app.route('/api/total-customers')
+def get_total_customers():
+    query = """
+    MATCH (c:Customer)
+    RETURN count(DISTINCT c) AS TotalCustomers
+    """
+    with driver.session() as session:
+        result = session.run(query)
+        record = result.single()  # Fetch the result once
+
+        if record:
+            total_customers = record["TotalCustomers"]  # Access the result
+        else:
+            total_customers = 0  # Default to 0 if no record is found
+
+    return jsonify({'TotalCustomers': total_customers})
+
+@app.route('/api/sales-by-city')
+def get_sales_by_city():
+    query = """
+    MATCH (s:Store)-[:FULFILLED_BY]-(o:Order)-[:PART_OF]-(oi:OrderItem)
+    WITH s, sum(oi.list_price) AS TotalSales
+    RETURN s.city AS Location, TotalSales
+    ORDER BY TotalSales DESC
+    """
+    with driver.session() as session:
+        result = session.run(query)
+        sales_by_city = [{"Location": record["Location"], "TotalSales": record["TotalSales"]} for record in result]
+
+    return jsonify(sales_by_city)
+
+@app.route('/api/employee-of-the-year')
+def get_employee_of_the_year():
+    query = """
+    MATCH (st:Staff)-[:PLACED_BY]-(o:Order)-[:CONTAINS]-(oi:OrderItem)
+    RETURN st.first_name AS FirstName, st.last_name AS LastName, sum(oi.list_price) AS TotalSales
+    ORDER BY TotalSales DESC
+    LIMIT 1
+    """
+    with driver.session() as session:
+        result = session.run(query)
+        record = result.single()  # Fetch the result once
+
+        if record:
+            employee = {
+                "FirstName": record["FirstName"],
+                "LastName": record["LastName"],
+                "TotalSales": record["TotalSales"]
+            }
+        else:
+            employee = {"FirstName": "No data", "LastName": "", "TotalSales": 0}
+
+    return jsonify(employee)
+
+@app.route('/api/fulfillment-rate')
+def get_fulfillment_rate():
+    query = """
+    MATCH (o:Order)
+    WITH count(o) AS TotalOrders
+    MATCH (o:Order)
+    WHERE o.shipped_date <= o.required_date
+    WITH count(o) AS OrdersOnTime, TotalOrders
+    RETURN OrdersOnTime, OrdersOnTime * 100.0 / TotalOrders AS FulfillmentRate
+    """
+    with driver.session() as session:
+        result = session.run(query)
+        record = result.single()  # Fetch the result once
+
+        if record:
+            fulfillment_rate = {
+                "OrdersOnTime": record["OrdersOnTime"],
+                "FulfillmentRate": record["FulfillmentRate"]
+            }
+        else:
+            fulfillment_rate = {"OrdersOnTime": 0, "FulfillmentRate": 0.0}
+
+    return jsonify(fulfillment_rate)
+
+@app.route('/api/revenue-trend')
+def get_revenue_trend():
+    query = """
+    MATCH (o:Order)-[:PART_OF]-(oi:OrderItem)
+    WHERE o.order_date IS NOT NULL
+    RETURN date.truncate('month', date(o.order_date)) AS Month, sum(oi.list_price) AS MonthlyRevenue
+    ORDER BY Month
+    """
+    with driver.session() as session:
+        result = session.run(query)
+        data = [{"Month": record["Month"].isoformat(), "MonthlyRevenue": record["MonthlyRevenue"]} for record in result]
+
+    return jsonify(data)
+
+
+@app.route('/api/update-order-status', methods=['POST'])
+def update_order_status():
+    data = request.json
+    try:
+        # Convert order_id to integer
+        order_id = int(data['order_id'])
+        new_status = data['new_status']
+    except ValueError:
+        return jsonify({'error': 'Invalid order ID format'}), 400
+
+    with driver.session() as session:
+        # First, check if the order exists
+        order_exists = session.run("""
+            MATCH (o:Order {order_id: $order_id})
+            RETURN o
+        """, {"order_id": order_id}).single()
+
+        if not order_exists:
+            return jsonify({'error': 'Node not found'}), 404
+
+        # Update the order status if it exists
+        result = session.run("""
+            MATCH (o:Order {order_id: $order_id})
+            SET o.order_status = $new_status
+            RETURN o.order_status AS updated_status
+        """, {"order_id": order_id, "new_status": new_status})
+        
+        updated_status = result.single()["updated_status"]
+        return jsonify({'message': 'Order status updated', 'order_status': updated_status})
+
+
 if __name__ == '__main__':
     app.run(debug=True, port=5001)
-   # order_date: date($order_date),
-        # required_date: date($required_date),
-        # shipped_date: date($shipped_date)

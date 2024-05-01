@@ -3,29 +3,30 @@ import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import MostSoldProduct from './MostSoldProduct';
 import TopProducts from './TopProducts';
 import CreateOrderForm from './CreateOrderForm';
+import Dashboard from './Dashboard'; 
+import UpdateOrderStatus from './UpdateOrderStatus'
+
 
 function App() {
   return (
     <Router>
-      <div>
-        <nav>
-          <ul>
-            <li>
-              <Link to="/most-sold-product">Most Sold Product</Link>
-            </li>
-            <li>
-              <Link to="/top-products">Top Products</Link>
-            </li>
-            <li>
-              <Link to="/create-order-form">Create Order</Link> 
-            </li>
+      <div style={{ padding: 20 }}>
+        <nav style={{ marginBottom: 20 }}>
+          <ul style={{ listStyleType: 'none', padding: 0 }}>
+            <li style={{ display: 'inline', marginRight: 10 }}><Link to="/dashboard">Dashboard</Link></li>
+            <li style={{ display: 'inline', marginRight: 10 }}><Link to="/UpdateOrderStatus">Update Order</Link></li>
+            <li style={{ display: 'inline', marginRight: 10 }}><Link to="/top-products">Top N Products</Link></li>
+            <li style={{ display: 'inline', marginRight: 10 }}><Link to="/create-order-form">Create Orders</Link></li>
           </ul>
         </nav>
 
+        {/* Route setup for different pages */}
         <Routes>
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/most-sold-product" element={<MostSoldProduct />} />
           <Route path="/top-products" element={<TopProducts />} />
           <Route path="/create-order-form" element={<CreateOrderForm />} />
+          <Route path ="/UpdateOrderStatus" element={<UpdateOrderStatus /> } />
         </Routes>
       </div>
     </Router>

@@ -11,6 +11,17 @@ nav ul {
   list-style-type: none;
   padding: 0;
 }
+.dashboard {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+.card {
+  border: 1px solid #ccc;
+  padding: 20px;
+  box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+}
+
 
 nav ul li {
   display: inline;
@@ -25,7 +36,7 @@ nav ul li {
   }
 }
 
-.App-header {
+/* .App-header {
   background-color: #282c34;
   min-height: 100vh;
   display: flex;
@@ -34,7 +45,7 @@ nav ul li {
   justify-content: center;
   font-size: calc(10px + 2vmin);
   color: white;
-}
+} */
 
 .App-link {
   color: #61dafb;
@@ -48,3 +59,49 @@ nav ul li {
     transform: rotate(360deg);
   }
 }
+
+.card {
+  margin: 20px auto; /* Centering the card if within a flex or grid layout */
+  background-color: #fff; /* Light background for the card */
+  border: 2px solid #007BFF; /* Solid border with a distinct color */
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Subtle shadow for depth */
+  transition: 0.3s; /* Smooth transition for hover effects */
+  padding: 20px; /* Ample padding for content */
+  border-radius: 10px; /* Rounded corners for modern appearance */
+  max-width: 300px; /* Maximum width for each card */
+}
+
+.card:hover {
+  box-shadow: 0 8px 16px rgba(0,0,0,0.2); /* More pronounced shadow on hover */
+}
+
+.card h2 {
+  color: #333;
+  font-size: 18px; /* Slightly larger text for the title */
+}
+
+.card-content p {
+  margin: 10px 0;
+  color: #555;
+  font-size: 16px; /* Clear, readable text size */
+}
+
+.card-content strong {
+  color: #222;
+  font-weight: bold; /* Bold for emphasis */
+}
+
+.card {
+  margin: 20px; /* Adjusted to add space around each card */
+  /* Other styles remain unchanged */
+}
+
+@media (max-width: 768px) {
+  .card {
+    margin: 10px;
+    padding: 10px;
+    max-width: none; /* Allows the card to expand in smaller screens */
+  }
+}
+
+
