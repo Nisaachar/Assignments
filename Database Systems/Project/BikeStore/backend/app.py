@@ -296,6 +296,56 @@ def update_order_status():
         updated_status = result.single()["updated_status"]
         return jsonify({'message': 'Order status updated', 'order_status': updated_status})
 
+@app.route('/api/customers', methods=['POST'])
+def create_customer():
+    data = request.get_json()
+    customer_id = data['customer_id']
+    first_name = data['first_name']
+    last_name = data['last_name']
+    phone = data['phone']
+    email = data['email']
+    street = data['street']
+    city = data['city']
+    state = data['state']
+    zip_code = data['zip_code']
+
+    query = """
+    CREATE (customer:Customer {
+        customer_id: $customer_id,
+        first_name: $first_name,
+        last_name: $last_name,
+        phone: $phone,
+        email: $email,
+        street: $street,
+        city: $city,
+        state: $state,
+        zip_code: $zip_code
+    })
+    RETURN customer
+    """
+
+    with driver.session() as session:
+        result = session.run(query, data)
+        created_customer = result.single()
+
+    if created_customer:
+        # Convert Neo4j Node to a dictionary
+        customer_dict = {k: created_customer['customer'].get(k) for k in created_customer['customer'].keys()}
+        return jsonify({
+            'status': 'success',
+            'customer': customer_dict
+        }), 201
+    else:
+        return jsonify({'error': 'Failed to create customer'}), 400
+    
+@app.route('/api/delete-order/<order_id>', methods=['DELETE'])
+def delete_order(order_id):
+    # Make sure to pass order_id as a string to the query
+    query = "MATCH (order:Order {order_id: $order_id}) DETACH DELETE order"
+    with driver.session() as session:
+        # Use a dictionary to ensure order_id is treated as a string in the query
+        session.run(query, {'order_id': order_id})
+        return jsonify({'success': 'Order deleted successfully'}), 200
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001)
